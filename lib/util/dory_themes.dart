@@ -7,8 +7,16 @@ class DoryThemes {
       fontFamily: 'GmarketSansTTF',
       textTheme: _textTheme,
       splashColor: Colors.white,
+      appBarTheme: _appbarTheme,
       scaffoldBackgroundColor: Colors.white,
       brightness: Brightness.light);
+
+
+  static const AppBarTheme _appbarTheme = AppBarTheme(
+    backgroundColor: Colors.white,
+    iconTheme: IconThemeData(color: DoryColors.primaryColor),
+    elevation: 0,
+  );
 
   static const TextTheme _textTheme = TextTheme(
     headline4: TextStyle(
