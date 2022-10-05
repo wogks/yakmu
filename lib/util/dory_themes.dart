@@ -6,19 +6,9 @@ class DoryThemes {
       primarySwatch: DoryColors.primaryMeterialColor,
       fontFamily: 'GmarketSansTTF',
       textTheme: _textTheme,
-      splashColor: Colors.pink,
+      splashColor: Colors.white,
       scaffoldBackgroundColor: Colors.white,
       brightness: Brightness.light);
-
-
-  static ThemeData get darktheme => ThemeData(
-      primarySwatch: DoryColors.primaryMeterialColor,
-      fontFamily: 'GmarketSansTTF',
-      textTheme: _textTheme,
-      splashColor: Colors.pink,
-      scaffoldBackgroundColor: Colors.white,
-      brightness: Brightness.light);
-
 
   static const TextTheme _textTheme = TextTheme(
     headline4: TextStyle(

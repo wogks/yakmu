@@ -1,4 +1,4 @@
-import 'package:alyak/presentation/add_page/add_page.dart';
+import 'package:alyak/presentation/add_medicine_page/add_medicine_page.dart';
 import 'package:alyak/presentation/history_page/history_page.dart';
 import 'package:alyak/presentation/today_page/today_page.dart';
 import 'package:alyak/util/dory_colors.dart';
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
   _onAddMedicine() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AddPage()),
+      MaterialPageRoute(builder: (context) => const AddMedicinePage()),
     );
   }
 }
