@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../util/add_page_widget.dart';
+
 class AddMedicinePage extends StatefulWidget {
   const AddMedicinePage({super.key});
 
@@ -34,54 +36,44 @@ class _AddMedicinePageState extends State<AddMedicinePage> {
           color: Colors.black,
         ),
       ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: pagePadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '무슨 약이고?',
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-                const Text(
-                  '설명: 동그란 사진기 모양을 눌러서 아빠가 먹을 약 사진을 등록.',
-                  style: TextStyle(fontSize: 12),
-                ),
-                const SizedBox(height: largeSpace),
-                Center(child: MedicineImageButton(
-                  changeImageFile: (File? value) {
-                    _medicineImage = value;
-                  },
-                )),
-                const SizedBox(height: largeSpace + regularSpace),
-                Text(
-                  '약 이름',
-                  style: Theme.of(context).textTheme.subtitle1,
-                ),
-                TextFormField(
-                  controller: _nameController,
-                  maxLength: 20,
-                  textInputAction: TextInputAction.done,
-                  style: Theme.of(context).textTheme.bodyText1,
-                  decoration: InputDecoration(
-                    hintText: '아빠가 먹을 약 이름을 여기다가 쓰고 다음버튼 클릭.',
-                    hintStyle: Theme.of(context).textTheme.bodyText1,
-                    contentPadding: textfieldContentPadding,
-                  ),
-                  //포거스 아웃이 안되어도 텍스트에 변화를 통해 다음버튼 활/비활성화
-                  onChanged: (_) {
-                    setState(() {});
-                  },
-                ),
-              ],
+      body: SingleChildScrollView(
+        child: AddPageBody(
+          children: [
+            Text(
+              '무슨 약이고?',
+              style: Theme.of(context).textTheme.headline4,
             ),
-          ),
+            const Text(
+              '설명: 동그란 사진기 모양을 눌러서 아빠가 먹을 약 사진을 등록.',
+              style: TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: largeSpace),
+            Center(child: MedicineImageButton(
+              changeImageFile: (File? value) {
+                _medicineImage = value;
+              },
+            )),
+            const SizedBox(height: largeSpace + regularSpace),
+            Text(
+              '약 이름',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            TextFormField(
+              controller: _nameController,
+              maxLength: 20,
+              textInputAction: TextInputAction.done,
+              style: Theme.of(context).textTheme.bodyText1,
+              decoration: InputDecoration(
+                hintText: '아빠가 먹을 약 이름을 여기다가 쓰고 다음버튼 클릭.',
+                hintStyle: Theme.of(context).textTheme.bodyText1,
+                contentPadding: textfieldContentPadding,
+              ),
+              //포거스 아웃이 안되어도 텍스트에 변화를 통해 다음버튼 활/비활성화
+              onChanged: (_) {
+                setState(() {});
+              },
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: SafeArea(
