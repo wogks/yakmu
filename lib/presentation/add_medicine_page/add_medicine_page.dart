@@ -15,8 +15,6 @@ class AddMedicinePage extends StatefulWidget {
 class _AddMedicinePageState extends State<AddMedicinePage> {
   final TextEditingController _nameController = TextEditingController();
 
-  File? _pickedImage;
-
   @override
   void dispose() {
     _nameController.dispose();
@@ -48,77 +46,12 @@ class _AddMedicinePageState extends State<AddMedicinePage> {
                   '무슨 약이고?',
                   style: Theme.of(context).textTheme.headline4,
                 ),
-                const SizedBox(height: largeSpace),
-                Center(
-                  child: CircleAvatar(
-                    radius: 40,
-                    child: CupertinoButton(
-                      padding: _pickedImage == null ? null : EdgeInsets.zero,
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              //세이프애리어로 감쌈
-                              return SafeArea(
-                                child: Padding(
-                                  padding: pagePadding,
-                                  child: Column(
-                                    //크기를 최대한 줄여줌
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          ImagePicker()
-                                              .pickImage(
-                                                  source: ImageSource.camera)
-                                              .then((xfile) {
-                                            if (xfile != null) {
-                                              setState(() {
-                                                _pickedImage = File(xfile.path);
-                                              });
-                                            }
-                                            //뭔가 동작을 하면 끄는 코드
-                                            Navigator.maybePop(context);
-                                          });
-                                        },
-                                        child: const Text('카메라로 촬영'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          ImagePicker()
-                                              .pickImage(
-                                                  source: ImageSource.gallery)
-                                              .then((xfile) {
-                                            if (xfile != null) {
-                                              setState(() {
-                                                _pickedImage = File(xfile.path);
-                                              });
-                                            }
-                                            //뭔가 동작을 하면 끄는 코드
-                                            Navigator.maybePop(context);
-                                          });
-                                        },
-                                        child: const Text('앨범에서 가져오기'),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                      },
-                      child: _pickedImage == null
-                          ? const Icon(
-                              CupertinoIcons.photo_camera_solid,
-                              size: 30,
-                              color: Colors.white,
-                            )
-                          : CircleAvatar(
-                              foregroundImage: FileImage(_pickedImage!),
-                              radius: 40,
-                            ),
-                    ),
-                  ),
+                const Text(
+                  '설명: 동그란 사진기 모양을 눌러서 아빠가 먹을 약 사진을 등록.',
+                  style: TextStyle(fontSize: 12),
                 ),
+                const SizedBox(height: largeSpace),
+                const Center(child: MedicineImageButton()),
                 const SizedBox(height: largeSpace + regularSpace),
                 Text(
                   '약 이름',
@@ -130,7 +63,7 @@ class _AddMedicinePageState extends State<AddMedicinePage> {
                   textInputAction: TextInputAction.done,
                   style: Theme.of(context).textTheme.bodyText1,
                   decoration: InputDecoration(
-                    hintText: '아빠가 먹을 약 이름을 여기다가 써.',
+                    hintText: '아빠가 먹을 약 이름을 여기다가 쓰고 다음버튼 클릭.',
                     hintStyle: Theme.of(context).textTheme.bodyText1,
                     contentPadding: textfieldContentPadding,
                   ),
@@ -153,6 +86,94 @@ class _AddMedicinePageState extends State<AddMedicinePage> {
               child: const Text('다음'),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class MedicineImageButton extends StatefulWidget {
+  const MedicineImageButton({super.key});
+
+  @override
+  State<MedicineImageButton> createState() => _MedicineImageButtonState();
+}
+
+class _MedicineImageButtonState extends State<MedicineImageButton> {
+  File? _pickedImage;
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: 40,
+      child: CupertinoButton(
+        padding: _pickedImage == null ? null : EdgeInsets.zero,
+        onPressed: _showBottomSheet,
+        child: _pickedImage == null
+            ? const Icon(
+                CupertinoIcons.photo_camera_solid,
+                size: 30,
+                color: Colors.white,
+              )
+            : CircleAvatar(
+                foregroundImage: FileImage(_pickedImage!),
+                radius: 40,
+              ),
+      ),
+    );
+  }
+
+  _showBottomSheet() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          //세이프애리어로 감쌈
+          return PickImageBottomSheet(
+            onPressedCamera: () => _onPressed(ImageSource.camera),
+            onPressedGallery: () => _onPressed(ImageSource.gallery),
+          );
+        });
+  }
+
+  void _onPressed(ImageSource source) {
+    ImagePicker().pickImage(source: source).then((xfile) {
+      if (xfile != null) {
+        setState(() {
+          _pickedImage = File(xfile.path);
+        });
+      }
+      //뭔가 동작을 하면 끄는 코드
+      Navigator.maybePop(context);
+    });
+  }
+}
+
+class PickImageBottomSheet extends StatelessWidget {
+  const PickImageBottomSheet(
+      {super.key,
+      required this.onPressedCamera,
+      required this.onPressedGallery});
+
+  final VoidCallback onPressedCamera;
+  final VoidCallback onPressedGallery;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: pagePadding,
+        child: Column(
+          //크기를 최대한 줄여줌
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton(
+              onPressed: onPressedCamera,
+              child: const Text('카메라로 촬영'),
+            ),
+            TextButton(
+              onPressed: onPressedGallery,
+              child: const Text('앨범에서 가져오기'),
+            ),
+          ],
         ),
       ),
     );
