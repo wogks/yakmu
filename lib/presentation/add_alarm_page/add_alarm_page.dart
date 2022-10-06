@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:alyak/util/dory_constants.dart';
+import 'package:alyak/util/dory_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -85,7 +86,49 @@ class AlarmBox extends StatelessWidget {
           child: TextButton(
             style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.subtitle2),
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return BottomSheetBody(
+                    children: [
+                      SizedBox(
+                        height: 300,
+                        child: CupertinoDatePicker(
+                          onDateTimeChanged: (dateTime) {},
+                          mode: CupertinoDatePickerMode.time,
+                        ),
+                      ),
+                      const SizedBox(height: regularSpace,),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: submitButtonHeight,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(textStyle: Theme.of(context).textTheme.subtitle1),
+                                  onPressed: () {}, child: const Text('선택'),),
+                            ),
+                          ),
+                          const SizedBox(width: smallSpace),
+                          Expanded(
+                            child: SizedBox(
+                              height: submitButtonHeight,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(textStyle: Theme.of(context).textTheme.subtitle1,
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black
+                                 ),
+                                  onPressed: () {}, child: const Text('취소'),),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
             child: const Text('18:00'),
           ),
         ),
