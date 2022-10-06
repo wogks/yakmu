@@ -11,6 +11,14 @@ class DoryThemes {
       scaffoldBackgroundColor: Colors.white,
       brightness: Brightness.light);
 
+      static ThemeData get darkTheme => ThemeData(
+      primarySwatch: DoryColors.primaryMeterialColor,
+      fontFamily: 'GmarketSansTTF',
+      textTheme: _textTheme,
+      splashColor: Colors.white,
+      appBarTheme: _appbarTheme,
+      brightness: Brightness.dark);
+
 
   static const AppBarTheme _appbarTheme = AppBarTheme(
     backgroundColor: Colors.white,
