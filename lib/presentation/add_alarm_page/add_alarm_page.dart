@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alyak/presentation/add_alarm_page/add_alarm_page_view_model.dart';
 import 'package:alyak/util/dory_constants.dart';
 import 'package:alyak/util/dory_widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,8 +9,8 @@ import 'package:intl/intl.dart';
 
 import '../../util/add_page_widget.dart';
 
-class AddAlarmPage extends StatefulWidget {
-  const AddAlarmPage({
+class AddAlarmPage extends StatelessWidget {
+  AddAlarmPage({
     super.key,
     required this.medicineImage,
     required this.medicineName,
@@ -18,16 +19,7 @@ class AddAlarmPage extends StatefulWidget {
   final File? medicineImage;
   final String medicineName;
 
-  @override
-  State<AddAlarmPage> createState() => _AddAlarmPageState();
-}
-
-class _AddAlarmPageState extends State<AddAlarmPage> {
-  final _alarms = <String>{
-    '8:00',
-    '13:00',
-    '19:00',
-  };
+  final _viewModel = AddAlarmViewModel();
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +38,12 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
           ),
           const SizedBox(height: largeSpace),
           Expanded(
-            child: ListView(children: alarmWidgets),
+            child: AnimatedBuilder(
+              builder: (context, _) {
+                return ListView(children: alarmWidgets);
+              },
+              animation: _viewModel,
+            ),
           ),
         ],
       ),
@@ -72,26 +69,15 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
     final children = <Widget>[];
 
     children.addAll(
-      _alarms.map(
+      _viewModel.alarms.map(
         (alarmTime) => AlarmBox(
           time: alarmTime,
-          onPressedMinus: () {
-            setState(() {
-              _alarms.remove(alarmTime);
-            });
-          },
+          viewModel: _viewModel,
         ),
       ),
     );
     children.add(AddAlarmButton(
-      onPressedPlus: () {
-        setState(() {
-          final now = DateTime.now();
-          //intl add dependency 해야함 시간 출력 포맷 변경
-          final nowTime = DateFormat('HH:mm').format(now);
-          _alarms.add(nowTime);
-        });
-      },
+      viewModel: _viewModel,
     ));
     return children;
   }
@@ -101,24 +87,22 @@ class AlarmBox extends StatelessWidget {
   const AlarmBox({
     Key? key,
     required this.time,
-    required this.onPressedMinus,
+    required this.viewModel,
   }) : super(key: key);
 
   final String time;
-  final VoidCallback onPressedMinus;
-
-  
+  final AddAlarmViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    //time값을 datetime값으로 변환해야함
-    final initTime = DateFormat('HH:mm').parse(time);
     return Row(
       children: [
         Expanded(
           flex: 1,
           child: IconButton(
-            onPressed: onPressedMinus,
+            onPressed: () {
+              viewModel.removeAlarm(time);
+            },
             icon: const Icon(CupertinoIcons.minus_circle),
           ),
         ),
@@ -132,7 +116,8 @@ class AlarmBox extends StatelessWidget {
                 context: context,
                 builder: (context) {
                   return TimePickerBottomSheet(
-                    initialDateTime: initTime,
+                    viewModel: viewModel,
+                    initialTime: time,
                   );
                 },
               );
@@ -145,21 +130,30 @@ class AlarmBox extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class TimePickerBottomSheet extends StatelessWidget {
-  const TimePickerBottomSheet({
-    Key? key, required this.initialDateTime,
+  TimePickerBottomSheet({
+    Key? key,
+    required this.initialTime,
+    required this.viewModel,
   }) : super(key: key);
 
-  final DateTime initialDateTime;
+  final String initialTime;
+  final AddAlarmViewModel viewModel;
+  DateTime? _setDateTime;
+  //time값을 datetime값으로 변환해야함
 
   @override
   Widget build(BuildContext context) {
+    final initialDateTime = DateFormat('HH:mm').parse(initialTime);
     return BottomSheetBody(
       children: [
         SizedBox(
           height: 300,
           child: CupertinoDatePicker(
-            onDateTimeChanged: (dateTime) {},
+            onDateTimeChanged: (dateTime) {
+              _setDateTime = dateTime;
+            },
             mode: CupertinoDatePickerMode.time,
             //초기 시간 설정
             initialDateTime: initialDateTime,
@@ -176,7 +170,13 @@ class TimePickerBottomSheet extends StatelessWidget {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       textStyle: Theme.of(context).textTheme.subtitle1),
-                  onPressed: () {},
+                  onPressed: () {
+                    viewModel.setAlarm(
+                      prevTime: initialTime,
+                      setTime: _setDateTime ?? initialDateTime,
+                    );
+                    Navigator.pop(context);
+                  },
                   child: const Text('선택'),
                 ),
               ),
@@ -190,7 +190,7 @@ class TimePickerBottomSheet extends StatelessWidget {
                       textStyle: Theme.of(context).textTheme.subtitle1,
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black),
-                  onPressed: () {},
+                  onPressed: () => Navigator.pop(context),
                   child: const Text('취소'),
                 ),
               ),
@@ -204,10 +204,11 @@ class TimePickerBottomSheet extends StatelessWidget {
 
 class AddAlarmButton extends StatelessWidget {
   const AddAlarmButton({
-    Key? key, required this.onPressedPlus,
+    Key? key,
+    required this.viewModel,
   }) : super(key: key);
 
-  final VoidCallback onPressedPlus;
+  final AddAlarmViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +217,7 @@ class AddAlarmButton extends StatelessWidget {
         textStyle: Theme.of(context).textTheme.subtitle2,
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
       ),
-      onPressed: onPressedPlus,
+      onPressed: viewModel.addNowAlarm,
       child: Row(
         children: const [
           Expanded(flex: 1, child: Icon(CupertinoIcons.plus_circle_fill)),
