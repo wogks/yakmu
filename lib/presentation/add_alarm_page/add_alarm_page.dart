@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:alyak/presentation/add_alarm_page/add_alarm_page_view_model.dart';
 import 'package:alyak/util/dory_constants.dart';
+import 'package:alyak/util/dory_file_service.dart';
 import 'package:alyak/util/dory_notofication.dart';
 import 'package:alyak/util/dory_widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -61,7 +62,8 @@ class AddAlarmPage extends StatelessWidget {
                 bool result = false;
                 //1. add alarm
                 for (var alarm in _viewModel.alarms) {
-                     result = await doryNotificationServiceViewModel.addNotifcication(
+                  result =
+                      await doryNotificationServiceViewModel.addNotifcication(
                     alarmTimeStr: alarm,
                     title: '$alarm 약먹을 시간이네!',
                     body: '$medicineName 먹는거 잊지말기',
@@ -70,10 +72,15 @@ class AddAlarmPage extends StatelessWidget {
                     // ignore: use_build_context_synchronously
                     showPermissionDenied(context, permission: '알람');
                   }
-                 
+
+                  //2. save image (local dir)
+                  String? imageFilePath;
+                  if (medicineImage != null) {
+                    imageFilePath =
+                        await saveImageToLocalDirectory(medicineImage!);
+                  }
                 }
 
-                //2. save image (local dir)
                 //3. add medicine model (local db, hive)
               },
               style: ElevatedButton.styleFrom(
