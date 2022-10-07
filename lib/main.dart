@@ -1,8 +1,16 @@
 import 'package:alyak/presentation/home_page/home_page.dart';
+import 'package:alyak/util/dory_notofication.dart';
 import 'package:alyak/util/dory_themes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+final notification = DoryNotificationService();
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  notification.initializeTimeZone();
+  notification.initializeNotification();
+
   runApp(const MyApp());
 }
 
@@ -11,11 +19,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: DoryThemes.lightTheme,
-      home: const HomePage(),
-      darkTheme: DoryThemes.darkTheme,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => DoryNotificationService(),
+        )
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: DoryThemes.lightTheme,
+        home: const HomePage(),
+        darkTheme: DoryThemes.darkTheme,
+      ),
     );
   }
 }
