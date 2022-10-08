@@ -1,10 +1,9 @@
 import 'dart:developer';
 
-
 import 'package:alyak/domain/model/medicine_model.dart';
-import 'package:hive/hive.dart';
+import 'package:alyak/domain/repository/dory_hive.dart';
 
-import 'dory_hive.dart';
+import 'package:hive/hive.dart';
 
 
 
@@ -26,7 +25,7 @@ class MedicineRepository {
   void deleteMedicine(int key) async {
     await medicineBox.delete(key);
 
-    log('[addMedicine] delete (key:$key)');
+    log('[deleteMedicineß] delete (key:$key)');
     log('result ${medicineBox.values.toList()}');
   }
 
@@ -36,16 +35,12 @@ class MedicineRepository {
   }) async {
     await medicineBox.put(key, medicine);
 
-    log('[addMedicine] update (key:$key) $medicine');
+    log('[updateMedicine] update (key:$key) $medicine');
     log('result ${medicineBox.values.toList()}');
   }
 
   int get newId {
     final lastId = medicineBox.values.isEmpty ? 0 : medicineBox.values.last.id;
     return lastId + 1;
-  }
-
-  int get id{
-   return medicineBox.values.last.id + 1;
   }
 }
