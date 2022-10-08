@@ -2,6 +2,7 @@ import 'package:alyak/presentation/add_medicine_page/add_medicine_page.dart';
 import 'package:alyak/presentation/history_page/history_page.dart';
 import 'package:alyak/presentation/today_page/today_page.dart';
 import 'package:alyak/util/dory_colors.dart';
+import 'package:alyak/util/dory_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   final _pages = [
-    const TodayPage(),
+    TodayPage(),
     const HistoryPage(),
   ];
 
@@ -23,24 +24,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      child: SafeArea(
-        top: false,
-        child: Scaffold(
-          appBar: AppBar(),
-          body: _pages[_currentIndex],
-          floatingActionButton: FloatingActionButton(
-              onPressed: _onAddMedicine, child: const Icon(Icons.add)),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: _buildBottomAppbar(),
+      child: Scaffold(
+        body: Padding(
+          padding: pagePadding,
+          child: SafeArea(child: _pages[_currentIndex]),
         ),
+        floatingActionButton: FloatingActionButton(
+            onPressed: _onAddMedicine, child: const Icon(Icons.add)),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: _buildBottomAppbar(),
       ),
     );
   }
 
   BottomAppBar _buildBottomAppbar() {
     return BottomAppBar(
-      elevation: 0,
       child: Container(
         height: kBottomNavigationBarHeight,
         color: Colors.white,

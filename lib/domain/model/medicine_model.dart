@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'medicine_model.g.dart';
 
 @HiveType(typeId: 1)
-class MeidicineModel {
+class MeidicineModel extends HiveObject {
   MeidicineModel({
     required this.id,
     required this.name,
