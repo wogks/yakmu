@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:alyak/domain/model/medicine_model.dart';
 import 'package:alyak/main.dart';
 import 'package:alyak/presentation/add_alarm_page/add_alarm_page_view_model.dart';
+import 'package:alyak/presentation/components/%08time_setting_bottomsheet.dart';
 import 'package:alyak/util/dory_constants.dart';
 import 'package:alyak/util/dory_file_service.dart';
 import 'package:alyak/util/dory_notofication.dart';
@@ -158,12 +159,18 @@ class AlarmBox extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
-                  return TimePickerBottomSheet(
+                  return TimeSettingBottomSheet(
                     viewModel: viewModel,
                     initialTime: time,
                   );
                 },
-              );
+              ).then((value) {
+                if (value == null || value is! DateTime) return;
+                viewModel.setAlarm(
+                      prevTime: time,
+                      setTime: value,
+                    );
+              });
             },
             child: Text(time),
           ),
@@ -173,77 +180,8 @@ class AlarmBox extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
-class TimePickerBottomSheet extends StatelessWidget {
-  TimePickerBottomSheet({
-    Key? key,
-    required this.initialTime,
-    required this.viewModel,
-  }) : super(key: key);
 
-  final String initialTime;
-  final AddAlarmViewModel viewModel;
-  DateTime? _setDateTime;
-  //time값을 datetime값으로 변환해야함
 
-  @override
-  Widget build(BuildContext context) {
-    final initialDateTime = DateFormat('HH:mm').parse(initialTime);
-    return BottomSheetBody(
-      children: [
-        SizedBox(
-          height: 300,
-          child: CupertinoDatePicker(
-            onDateTimeChanged: (dateTime) {
-              _setDateTime = dateTime;
-            },
-            mode: CupertinoDatePickerMode.time,
-            //초기 시간 설정
-            initialDateTime: initialDateTime,
-          ),
-        ),
-        const SizedBox(
-          height: regularSpace,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: submitButtonHeight,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      textStyle: Theme.of(context).textTheme.subtitle1),
-                  onPressed: () {
-                    viewModel.setAlarm(
-                      prevTime: initialTime,
-                      setTime: _setDateTime ?? initialDateTime,
-                    );
-                    Navigator.pop(context);
-                  },
-                  child: const Text('선택'),
-                ),
-              ),
-            ),
-            const SizedBox(width: smallSpace),
-            Expanded(
-              child: SizedBox(
-                height: submitButtonHeight,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      textStyle: Theme.of(context).textTheme.subtitle1,
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black),
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('취소'),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
 
 class AddAlarmButton extends StatelessWidget {
   const AddAlarmButton({
