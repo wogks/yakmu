@@ -116,9 +116,9 @@ class _TimeTile extends StatelessWidget {
           element.key == history.medicineKey,
       orElse: () => MeidicineModel(
         id: -1,
-        name: '삭제된 약입니다',
+        name: history.name,//'삭제된 약입니다',
         alarms: [],
-        imagePath: null,
+        imagePath: history.imagePath,
       ),
     );
   }

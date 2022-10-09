@@ -9,6 +9,8 @@ class MedicineHistory extends HiveObject {
     required this.alarmTime,
     required this.takeTime,
     required this.medicineKey,
+    required this.name,
+    required this.imagePath,
   });
 
   //id(식별할 아이디), name, image(optional), alarms
@@ -24,8 +26,14 @@ class MedicineHistory extends HiveObject {
   @HiveField(3, defaultValue: -1)
   final int medicineKey;
 
+  @HiveField(4, defaultValue: '삭제된 약')
+  final String name;
+
+  @HiveField(5)
+  final String? imagePath;
+
   @override
   String toString() {
-    return 'medicineId:$medicineId, alarmTime: $alarmTime, takeTime: $takeTime, medicineKey: $medicineKey';
+    return 'medicineId:$medicineId, alarmTime: $alarmTime, takeTime: $takeTime, medicineKey: $medicineKey, name: $name, imagePath: $imagePath';
   }
 }
