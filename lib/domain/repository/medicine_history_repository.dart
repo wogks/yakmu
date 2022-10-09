@@ -5,8 +5,6 @@ import 'package:alyak/domain/repository/dory_hive.dart';
 
 import 'package:hive/hive.dart';
 
-
-
 class MedicineHistoryRepository {
   Box<MedicineHistory>? _historyBox;
 
@@ -39,4 +37,10 @@ class MedicineHistoryRepository {
     log('result ${historyBox.values.toList()}');
   }
 
+  void deleteAllHistory(Iterable<int> keys) async {
+    await historyBox.deleteAll(keys);
+
+    log('[deleteHistory] delete (key:$keys)');
+    log('result ${historyBox.values.toList()}');
+  }
 }
