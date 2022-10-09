@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import '../add_alarm_page/add_alarm_page_view_model.dart';
+import 'components/today_take_tile.dart';
 
 class TodayPage extends StatelessWidget {
   const TodayPage({super.key});
@@ -65,7 +66,7 @@ class TodayPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: smallSpace),
             itemCount: medicineAlarms.length,
             itemBuilder: (context, index) {
-              return MedicineListTile(
+              return AfterTakeTile(
                 medicineAlarm: medicineAlarms[index],
               );
             },
@@ -82,114 +83,9 @@ class TodayPage extends StatelessWidget {
   }
 }
 
-class MedicineListTile extends StatelessWidget {
-  const MedicineListTile({
-    Key? key,
-    required this.medicineAlarm,
-  }) : super(key: key);
 
-  final MedicineAlarm medicineAlarm;
 
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.bodyText2;
-    final viewModel = AddAlarmViewModel();
-    return Row(
-      children: [
-        CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: medicineAlarm.imagePath == null
-              ? null
-              : () {
-                  Navigator.push(
-                      context,
-                      FadePageRoute(
-                          page: ImageDetailPage(medicineAlarm: medicineAlarm)));
-                },
-          child: CircleAvatar(
-            radius: 40,
-            foregroundImage: medicineAlarm.imagePath == null
-                ? null
-                : FileImage(File(medicineAlarm.imagePath!)),
-          ),
-        ),
-        const SizedBox(
-          width: smallSpace,
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('🕑 ${medicineAlarm.alarmTime}', style: textStyle),
-              const SizedBox(height: 6),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(medicineAlarm.name, style: textStyle),
-                  TileActionButton(
-                    onTap: () {},
-                    title: '지금',
-                  ),
-                  Text('ㅣ', style: textStyle),
-                  TileActionButton(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) => TimeSettingBottomSheet(
-                            initialTime: medicineAlarm.alarmTime,
-                            viewModel: viewModel),
-                      ).then((takeDateTime) {
-                        if (takeDateTime == null || takeDateTime is! DateTime) {
-                          return;
-                        }
 
-                        historyRepository.addHistory(
-                          MedicineHistory(
-                              medicineId: medicineAlarm.id,
-                              alarmTime: medicineAlarm.alarmTime,
-                              takeTime: takeDateTime),
-                        );
-                      });
-                    },
-                    title: '아까',
-                  ),
-                  Text('먹었어요!', style: textStyle),
-                ],
-              )
-            ],
-          ),
-        ),
-        CupertinoButton(
-          onPressed: () {
-            medicineRepository.deleteMedicine(medicineAlarm.key);
-          },
-          child: const Icon(CupertinoIcons.ellipsis_vertical),
-        )
-      ],
-    );
-  }
-}
-
-class ImageDetailPage extends StatelessWidget {
-  const ImageDetailPage({
-    Key? key,
-    required this.medicineAlarm,
-  }) : super(key: key);
-
-  final MedicineAlarm medicineAlarm;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-      ),
-      body: Center(
-        child: Image.file(File(medicineAlarm.imagePath!)),
-      ),
-    );
-  }
-}
 
 class TileActionButton extends StatelessWidget {
   const TileActionButton({
