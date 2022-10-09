@@ -66,7 +66,7 @@ class TodayPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: smallSpace),
             itemCount: medicineAlarms.length,
             itemBuilder: (context, index) {
-              return AfterTakeTile(
+              return BeforeTakeTile(
                 medicineAlarm: medicineAlarms[index],
               );
             },

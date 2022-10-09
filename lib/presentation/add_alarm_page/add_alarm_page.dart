@@ -74,7 +74,8 @@ class AddAlarmPage extends StatelessWidget {
                   if (!result) {
                     // ignore: use_build_context_synchronously
                     return showPermissionDenied(context, permission: '알람');
-                  }
+                  }}
+                
 
                   //2. save image (local dir)
                   String? imageFilePath;
@@ -93,7 +94,7 @@ class AddAlarmPage extends StatelessWidget {
 
                   // ignore: use_build_context_synchronously
                   Navigator.popUntil(context, (route) => route.isFirst);
-                }
+                
 
                 //3. add medicine model (local db, hive)
               },
