@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../util/add_page_widget.dart';
+import '../components/pick_image_bottomsheet.dart';
 
 class AddMedicinePage extends StatefulWidget {
   const AddMedicinePage({super.key});
@@ -114,7 +115,7 @@ class _AddMedicinePageState extends State<AddMedicinePage> {
 }
 
 class _MedicineImageButton extends StatefulWidget {
-  const _MedicineImageButton({super.key, required this.changeImageFile});
+  const _MedicineImageButton({required this.changeImageFile});
 
   final ValueChanged<File?> changeImageFile;
 
@@ -175,28 +176,4 @@ class _MedicineImageButtonState extends State<_MedicineImageButton> {
   }
 }
 
-class PickImageBottomSheet extends StatelessWidget {
-  const PickImageBottomSheet(
-      {super.key,
-      required this.onPressedCamera,
-      required this.onPressedGallery});
 
-  final VoidCallback onPressedCamera;
-  final VoidCallback onPressedGallery;
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomSheetBody(
-      children: [
-        TextButton(
-          onPressed: onPressedCamera,
-          child: const Text('카메라로 촬영'),
-        ),
-        TextButton(
-          onPressed: onPressedGallery,
-          child: const Text('앨범에서 가져오기'),
-        ),
-      ],
-    );
-  }
-}

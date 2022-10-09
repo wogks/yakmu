@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:alyak/presentation/components/%08time_setting_bottomsheet.dart';
+import 'package:alyak/presentation/components/more_action_bottomsheet%20copy.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -228,7 +229,21 @@ class _MoreButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoButton(
       onPressed: () {
-        medicineRepository.deleteMedicine(medicineAlarm.key);
+        //medicineRepository.deleteMedicine(medicineAlarm.key);
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => MoreActionBottomSheet(
+            onPressedModify: () {
+              
+            }, 
+            onPressedDeleteOnlyMedicine: () {
+              
+            },
+            onPressedDeleteAll: () {
+              
+            },
+            ),
+        );
       },
       child: const Icon(CupertinoIcons.ellipsis_vertical),
     );
