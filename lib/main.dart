@@ -1,4 +1,5 @@
 import 'package:alyak/domain/repository/dory_hive.dart';
+import 'package:alyak/domain/repository/medicine_history_repository.dart';
 import 'package:alyak/domain/repository/medicine_repository.dart';
 import 'package:alyak/presentation/home_page/home_page.dart';
 import 'package:alyak/util/dory_notofication.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 final notification = DoryNotificationService();
 final hive = DoryHive();
 final medicineRepository = MedicineRepository();
+final historyRepository = MedicineHistoryRepository();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

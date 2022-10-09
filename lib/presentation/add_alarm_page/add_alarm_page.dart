@@ -10,7 +10,6 @@ import 'package:alyak/util/dory_notofication.dart';
 import 'package:alyak/util/dory_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../util/add_page_widget.dart';

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:alyak/domain/model/medicine_alarm_model.dart';
+import 'package:alyak/domain/model/medicine_history_model.dart';
 import 'package:alyak/domain/model/medicine_model.dart';
 import 'package:alyak/main.dart';
 import 'package:alyak/presentation/add_medicine_page/components/add_medicine_page_component.dart';
@@ -15,13 +16,10 @@ import '../add_alarm_page/add_alarm_page_view_model.dart';
 
 class TodayPage extends StatelessWidget {
   const TodayPage({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
-    
     return Column(
-      
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -29,7 +27,6 @@ class TodayPage extends StatelessWidget {
           style: Theme.of(context).textTheme.headline4,
         ),
         const SizedBox(height: regularSpace),
-        
         Expanded(
           child: ValueListenableBuilder(
             valueListenable: medicineRepository.medicineBox.listenable(),
@@ -136,10 +133,23 @@ class MedicineListTile extends StatelessWidget {
                   Text('ㅣ', style: textStyle),
                   TileActionButton(
                     onTap: () {
-                      showModalBottomSheet(context: context, builder:(context) => TimeSettingBottomSheet(
-                        initialTime: medicineAlarm.alarmTime, 
-                        viewModel: viewModel),
-                        ).then((value) => print(value));
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => TimeSettingBottomSheet(
+                            initialTime: medicineAlarm.alarmTime,
+                            viewModel: viewModel),
+                      ).then((takeDateTime) {
+                        if (takeDateTime == null || takeDateTime is! DateTime) {
+                          return;
+                        }
+
+                        historyRepository.addHistory(
+                          MedicineHistory(
+                              medicineId: medicineAlarm.id,
+                              alarmTime: medicineAlarm.alarmTime,
+                              takeTime: takeDateTime),
+                        );
+                      });
                     },
                     title: '아까',
                   ),
