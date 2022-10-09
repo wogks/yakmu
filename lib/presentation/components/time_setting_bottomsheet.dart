@@ -11,24 +11,28 @@ class TimeSettingBottomSheet extends StatelessWidget {
     Key? key,
     required this.initialTime,
     required this.viewModel,
+    this.submitTitle = '선택',
+    this.bottomWidget,
   }) : super(key: key);
 
   final String initialTime;
   final AddAlarmViewModel viewModel;
+  final String submitTitle;
+  final Widget? bottomWidget;
 
   @override
   Widget build(BuildContext context) {
-
     final initialTimeData = DateFormat('HH:mm').parse(initialTime);
     final now = DateTime.now();
-    final initialDateTime = DateTime(now.year, now.month, now.day, initialTimeData.hour, initialTimeData.minute);
+    final initialDateTime = DateTime(now.year, now.month, now.day,
+        initialTimeData.hour, initialTimeData.minute);
     DateTime setDateTime = initialDateTime;
 
     //time값을 datetime값으로 변환해야함
     return BottomSheetBody(
       children: [
         SizedBox(
-          height: 300,
+          height: 200,
           child: CupertinoDatePicker(
             onDateTimeChanged: (dateTime) {
               setDateTime = dateTime;
@@ -39,8 +43,10 @@ class TimeSettingBottomSheet extends StatelessWidget {
           ),
         ),
         const SizedBox(
-          height: regularSpace,
+          height: smallSpace,
         ),
+        if (bottomWidget != null) bottomWidget!,
+        const SizedBox(height: smallSpace),
         Row(
           children: [
             Expanded(
@@ -53,7 +59,7 @@ class TimeSettingBottomSheet extends StatelessWidget {
                     Navigator.pop(context, setDateTime);
                     //,하고 setdatetime 하면 팝 하고 셋데타 값이 넘어감
                   },
-                  child: const Text('선택'),
+                  child: Text(submitTitle),
                 ),
               ),
             ),
