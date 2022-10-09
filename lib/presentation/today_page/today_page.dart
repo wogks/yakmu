@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:alyak/domain/model/medicine_alarm_model.dart';
 import 'package:alyak/domain/model/medicine_model.dart';
 import 'package:alyak/main.dart';
+import 'package:alyak/presentation/add_medicine_page/components/add_medicine_page_component.dart';
 import 'package:alyak/util/dory_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -80,10 +81,17 @@ class MedicineListTile extends StatelessWidget {
       children: [
         CupertinoButton(
           padding: EdgeInsets.zero,
-          onPressed: () {},
+          onPressed: medicineAlarm.imagePath == null ? null : () {
+            Navigator.push(
+                context,
+                FadePageRoute(
+                    page: ImageDetailPage(medicineAlarm: medicineAlarm)));
+          },
           child: CircleAvatar(
             radius: 40,
-            foregroundImage: medicineAlarm.imagePath == null ? null : FileImage(File(medicineAlarm.imagePath!)),
+            foregroundImage: medicineAlarm.imagePath == null
+                ? null
+                : FileImage(File(medicineAlarm.imagePath!)),
           ),
         ),
         const SizedBox(
@@ -122,6 +130,27 @@ class MedicineListTile extends StatelessWidget {
         )
       ],
     );
+  }
+}
+
+class ImageDetailPage extends StatelessWidget {
+  const ImageDetailPage({
+    Key? key,
+    required this.medicineAlarm,
+  }) : super(key: key);
+
+  final MedicineAlarm medicineAlarm;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+                  appBar: AppBar(
+    leading: const CloseButton(),
+                  ),
+                  body: Center(
+    child: Image.file(File(medicineAlarm.imagePath!)),
+                  ),
+                );
   }
 }
 
