@@ -5,6 +5,7 @@ import 'package:alyak/presentation/home_page/home_page.dart';
 import 'package:alyak/util/dory_notofication.dart';
 import 'package:alyak/util/dory_themes.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 final notification = DoryNotificationService();
@@ -13,6 +14,7 @@ final medicineRepository = MedicineRepository();
 final historyRepository = MedicineHistoryRepository();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting();
 
   await notification.initializeTimeZone();
   await notification.initializeNotification();
