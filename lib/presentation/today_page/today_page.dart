@@ -4,6 +4,7 @@ import 'package:alyak/domain/model/medicine_alarm_model.dart';
 import 'package:alyak/domain/model/medicine_model.dart';
 import 'package:alyak/main.dart';
 import 'package:alyak/presentation/add_medicine_page/components/add_medicine_page_component.dart';
+import 'package:alyak/presentation/today_page/components/emty_widget.dart';
 import 'package:alyak/util/dory_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class TodayPage extends StatelessWidget {
           style: Theme.of(context).textTheme.headline4,
         ),
         const SizedBox(height: regularSpace),
-        const Divider(height: 1, thickness: 2.0), //리스트부에서 짝 끊어줌
+        
         Expanded(
           child: ValueListenableBuilder(
             valueListenable: medicineRepository.medicineBox.listenable(),
@@ -36,6 +37,10 @@ class TodayPage extends StatelessWidget {
   Widget _buildMedicineListView(context, Box<MeidicineModel> box, _) {
     final medicines = box.values.toList();
     final medicineAlarms = <MedicineAlarm>[];
+    //리스트가 비어있을떄 빈화면을 보여주는 창
+    if (medicines.isEmpty) {
+      return const TodayEmpty();
+    }
 
     for (var medicine in medicines) {
       for (var alarm in medicine.alarms) {
@@ -49,19 +54,27 @@ class TodayPage extends StatelessWidget {
       }
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: smallSpace),
-      itemCount: medicineAlarms.length,
-      itemBuilder: (context, index) {
-        return MedicineListTile(
-          medicineAlarm: medicineAlarms[index],
-        );
-      },
-      separatorBuilder: (context, index) {
-        return const Divider(
-          height: regularSpace,
-        );
-      },
+    return Column(
+      children: [
+        const Divider(height: 1, thickness: 1.0), //리스트부에서 짝 끊어줌
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(vertical: smallSpace),
+            itemCount: medicineAlarms.length,
+            itemBuilder: (context, index) {
+              return MedicineListTile(
+                medicineAlarm: medicineAlarms[index],
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const Divider(
+                height: regularSpace,
+              );
+            },
+          ),
+        ),
+        const Divider(height: 1, thickness: 1.0), //리스트부에서 짝 끊어줌
+      ],
     );
   }
 }
@@ -81,12 +94,14 @@ class MedicineListTile extends StatelessWidget {
       children: [
         CupertinoButton(
           padding: EdgeInsets.zero,
-          onPressed: medicineAlarm.imagePath == null ? null : () {
-            Navigator.push(
-                context,
-                FadePageRoute(
-                    page: ImageDetailPage(medicineAlarm: medicineAlarm)));
-          },
+          onPressed: medicineAlarm.imagePath == null
+              ? null
+              : () {
+                  Navigator.push(
+                      context,
+                      FadePageRoute(
+                          page: ImageDetailPage(medicineAlarm: medicineAlarm)));
+                },
           child: CircleAvatar(
             radius: 40,
             foregroundImage: medicineAlarm.imagePath == null
@@ -144,13 +159,13 @@ class ImageDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-                  appBar: AppBar(
-    leading: const CloseButton(),
-                  ),
-                  body: Center(
-    child: Image.file(File(medicineAlarm.imagePath!)),
-                  ),
-                );
+      appBar: AppBar(
+        leading: const CloseButton(),
+      ),
+      body: Center(
+        child: Image.file(File(medicineAlarm.imagePath!)),
+      ),
+    );
   }
 }
 
