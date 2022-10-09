@@ -66,9 +66,7 @@ class TodayPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: smallSpace),
             itemCount: medicineAlarms.length,
             itemBuilder: (context, index) {
-              return BeforeTakeTile(
-                medicineAlarm: medicineAlarms[index],
-              );
+              return _buildListTile(medicineAlarms[index]);
             },
             separatorBuilder: (context, index) {
               return const Divider(
@@ -81,11 +79,48 @@ class TodayPage extends StatelessWidget {
       ],
     );
   }
+
+  Widget _buildListTile(MedicineAlarm medicineAlarm) {
+    return ValueListenableBuilder(
+      valueListenable: historyRepository.historyBox.listenable(),
+      builder: (context, Box<MedicineHistory> historyBox, _) {
+        if (historyBox.values.isEmpty) {
+          return BeforeTakeTile(
+            medicineAlarm: medicineAlarm,
+          );
+        }
+
+        final todayTakeHistory = historyBox.values.singleWhere(
+          (history) =>
+              history.medicineId == medicineAlarm.id &&
+              // history.medicineKey == medicineAlarm.key &&
+              history.alarmTime == medicineAlarm.alarmTime &&
+              isToday(history.takeTime, DateTime.now()),
+          orElse: () => MedicineHistory(
+            medicineId: -1,
+            alarmTime: '',
+            takeTime: DateTime.now(),
+            // medicineKey: -1,
+            // imagePath: null,
+            // name: '',
+          ),
+        );
+
+        if (todayTakeHistory.medicineId == -1 &&
+            todayTakeHistory.alarmTime == '') {
+          return BeforeTakeTile(
+            medicineAlarm: medicineAlarm,
+          );
+        }
+
+        return AfterTakeTile(
+          medicineAlarm: medicineAlarm,
+          // history: todayTakeHistory,
+        );
+      },
+    );
+  }
 }
-
-
-
-
 
 class TileActionButton extends StatelessWidget {
   const TileActionButton({
@@ -111,4 +146,10 @@ class TileActionButton extends StatelessWidget {
       ),
     );
   }
+}
+
+bool isToday(DateTime source, DateTime destination) {
+  return source.year == destination.year &&
+      source.month == destination.month &&
+      source.day == destination.day;
 }

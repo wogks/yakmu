@@ -74,27 +74,26 @@ class AddAlarmPage extends StatelessWidget {
                   if (!result) {
                     // ignore: use_build_context_synchronously
                     return showPermissionDenied(context, permission: '알람');
-                  }}
-                
-
-                  //2. save image (local dir)
-                  String? imageFilePath;
-                  if (medicineImage != null) {
-                    imageFilePath =
-                        await saveImageToLocalDirectory(medicineImage!);
                   }
+                }
 
-                  final medicine = MeidicineModel(
-                    id: medicineRepository.newId,
-                    name: medicineName,
-                    alarms: _viewModel.alarms.toList(),
-                    imagePath: imageFilePath,
-                  );
-                  medicineRepository.addMedicine(medicine);
+                //2. save image (local dir)
+                String? imageFilePath;
+                if (medicineImage != null) {
+                  imageFilePath =
+                      await saveImageToLocalDirectory(medicineImage!);
+                }
 
-                  // ignore: use_build_context_synchronously
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                
+                final medicine = MeidicineModel(
+                  id: medicineRepository.newId,
+                  name: medicineName,
+                  alarms: _viewModel.alarms.toList(),
+                  imagePath: imageFilePath,
+                );
+                medicineRepository.addMedicine(medicine);
+
+                // ignore: use_build_context_synchronously
+                Navigator.popUntil(context, (route) => route.isFirst);
 
                 //3. add medicine model (local db, hive)
               },
@@ -167,9 +166,9 @@ class AlarmBox extends StatelessWidget {
               ).then((value) {
                 if (value == null || value is! DateTime) return;
                 viewModel.setAlarm(
-                      prevTime: time,
-                      setTime: value,
-                    );
+                  prevTime: time,
+                  setTime: value,
+                );
               });
             },
             child: Text(time),
@@ -179,9 +178,6 @@ class AlarmBox extends StatelessWidget {
     );
   }
 }
-
-
-
 
 class AddAlarmButton extends StatelessWidget {
   const AddAlarmButton({

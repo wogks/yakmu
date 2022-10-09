@@ -101,7 +101,19 @@ class AfterTakeTile extends StatelessWidget {
     final viewModel = AddAlarmViewModel();
     return Row(
       children: [
-        _MedicineImageButton(medicineAlarm: medicineAlarm),
+        Stack(
+          children: [
+            _MedicineImageButton(medicineAlarm: medicineAlarm),
+            CircleAvatar(
+              radius: 40,
+              backgroundColor: Colors.green.withOpacity(0.7),
+              child: const Icon(
+                CupertinoIcons.check_mark,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
         const SizedBox(
           width: smallSpace,
         ),
