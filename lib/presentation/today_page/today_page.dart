@@ -1,18 +1,13 @@
-import 'dart:io';
 
 import 'package:alyak/domain/model/medicine_alarm_model.dart';
 import 'package:alyak/domain/model/medicine_history_model.dart';
 import 'package:alyak/domain/model/medicine_model.dart';
 import 'package:alyak/main.dart';
-import 'package:alyak/presentation/add_medicine_page/components/add_medicine_page_component.dart';
-import 'package:alyak/presentation/components/%08time_setting_bottomsheet.dart';
 import 'package:alyak/presentation/today_page/components/emty_widget.dart';
 import 'package:alyak/util/dory_constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
-import '../add_alarm_page/add_alarm_page_view_model.dart';
 import 'components/today_take_tile.dart';
 
 class TodayPage extends StatelessWidget {
@@ -115,7 +110,7 @@ class TodayPage extends StatelessWidget {
 
         return AfterTakeTile(
           medicineAlarm: medicineAlarm,
-          // history: todayTakeHistory,
+          history: todayTakeHistory,
         );
       },
     );

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:alyak/presentation/components/%08time_setting_bottomsheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../domain/model/medicine_alarm_model.dart';
 import '../../../domain/model/medicine_history_model.dart';
@@ -43,57 +44,52 @@ class BeforeTakeTile extends StatelessWidget {
     );
   }
 
-  
-
-  List<Widget> _buildTileBody(TextStyle? textStyle, BuildContext context, AddAlarmViewModel viewModel) {
+  List<Widget> _buildTileBody(
+      TextStyle? textStyle, BuildContext context, AddAlarmViewModel viewModel) {
     return [
-            Text('🕑 ${medicineAlarm.alarmTime}', style: textStyle),
-            const SizedBox(height: 6),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(medicineAlarm.name, style: textStyle),
-                TileActionButton(
-                  onTap: () {},
-                  title: '지금',
-                ),
-                Text('ㅣ', style: textStyle),
-                TileActionButton(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) => TimeSettingBottomSheet(
-                          initialTime: medicineAlarm.alarmTime,
-                          viewModel: viewModel),
-                    ).then((takeDateTime) {
-                      if (takeDateTime == null || takeDateTime is! DateTime) {
-                        return;
-                      }
-
-                      historyRepository.addHistory(
-                        MedicineHistory(
-                            medicineId: medicineAlarm.id,
-                            alarmTime: medicineAlarm.alarmTime,
-                            takeTime: takeDateTime),
-                      );
-                    });
-                  },
-                  title: '아까',
-                ),
-                Text('먹었어요!', style: textStyle),
-              ],
-            )
-          ];
+      Text('🕑 ${medicineAlarm.alarmTime}', style: textStyle),
+      const SizedBox(height: 6),
+      Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(medicineAlarm.name, style: textStyle),
+          TileActionButton(
+            onTap: () => _onPreviousTake(context, viewModel),
+            title: '아까',
+          ),
+          Text('먹었어요!', style: textStyle),
+        ],
+      )
+    ];
   }
+  void _onPreviousTake (BuildContext context, AddAlarmViewModel viewModel) {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => TimeSettingBottomSheet(
+                    initialTime: medicineAlarm.alarmTime, viewModel: viewModel),
+              ).then((takeDateTime) {
+                if (takeDateTime == null || takeDateTime is! DateTime) {
+                  return;
+                }
+
+                historyRepository.addHistory(
+                  MedicineHistory(
+                      medicineId: medicineAlarm.id,
+                      alarmTime: medicineAlarm.alarmTime,
+                      takeTime: takeDateTime),
+                );
+              });
+            }
 }
 
 class AfterTakeTile extends StatelessWidget {
   const AfterTakeTile({
     Key? key,
-    required this.medicineAlarm,
+    required this.medicineAlarm, required this.history,
   }) : super(key: key);
 
   final MedicineAlarm medicineAlarm;
+  final MedicineHistory history;
 
   @override
   Widget build(BuildContext context) {
@@ -126,33 +122,59 @@ class AfterTakeTile extends StatelessWidget {
         _MoreButton(medicineAlarm: medicineAlarm)
       ],
     );
+    
   }
 
-  
-
-  List<Widget> _buildTileBody(TextStyle? textStyle, BuildContext context, AddAlarmViewModel viewModel) {
+  List<Widget> _buildTileBody(
+      TextStyle? textStyle, BuildContext context, AddAlarmViewModel viewModel) {
+        
     return [
-      Text.rich(TextSpan(text: '✅ ${medicineAlarm.alarmTime} →',
-      style: textStyle,
-      children: [
-        TextSpan(text: '20:19',style: textStyle?.copyWith(fontWeight: FontWeight.w500))
-      ]),
+      Text.rich(
+        TextSpan(
+            text: '✅ ${medicineAlarm.alarmTime} →',
+            style: textStyle,
+            children: [
+              TextSpan(
+                  text: DateFormat('HH:mm').format(history.takeTime),
+                  style: textStyle?.copyWith(fontWeight: FontWeight.w500))
+            ]),
       ),
-            const SizedBox(height: 6),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(medicineAlarm.name, style: textStyle),
-                TileActionButton(
-                  onTap: () {},
-                  title: '20:19분에',
-                ),
-                
-                Text('먹었어요!', style: textStyle),
-              ],
-            )
-          ];
+      const SizedBox(height: 6),
+      Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(medicineAlarm.name, style: textStyle),
+          TileActionButton(
+            onTap: () => _onTap(context, viewModel),
+            title: DateFormat('HH시mm에').format(history.takeTime),
+          ),
+          Text('먹었어요!', style: textStyle),
+        ],
+      )
+    ];
   }
+
+  String get takeTimeStr => DateFormat('HH:mm').format(history.takeTime);
+
+  void _onTap (BuildContext context, AddAlarmViewModel viewModel) {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => TimeSettingBottomSheet(
+                    initialTime: takeTimeStr, viewModel: viewModel,),
+              ).then((takeDateTime) {
+                if (takeDateTime == null || takeDateTime is! DateTime) {
+                  return;
+                }
+
+                historyRepository.updateHistory(
+                  key: history.key,
+                  history: MedicineHistory(
+                      medicineId: medicineAlarm.id,
+                      alarmTime: medicineAlarm.alarmTime,
+                      takeTime: takeDateTime), 
+                );
+              });
+            }
 }
 
 class _MoreButton extends StatelessWidget {
