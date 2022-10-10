@@ -36,7 +36,7 @@ class HistoryPage extends StatelessWidget {
   Widget _buildListView(
       BuildContext context, Box<MedicineHistory> historyBox, _) {
     final histories = historyBox.values.toList().reversed.toList();
-    if(histories.isEmpty){
+    if (histories.isEmpty) {
       return const HistoryEmpty();
     }
     return ListView.builder(
