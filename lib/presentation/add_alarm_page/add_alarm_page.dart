@@ -162,6 +162,7 @@ class AddAlarmPage extends StatelessWidget {
     }
 
     if (!result) {
+      // ignore: use_build_context_synchronously
       return showPermissionDenied(context, permission: '알람');
     }
 

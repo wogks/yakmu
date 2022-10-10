@@ -1,5 +1,6 @@
 import 'package:alyak/domain/model/medicine_history_model.dart';
 import 'package:alyak/domain/model/medicine_model.dart';
+import 'package:alyak/presentation/history_page/components/history_empty_widget.dart';
 import 'package:alyak/presentation/today_page/components/today_take_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -33,8 +34,11 @@ class HistoryPage extends StatelessWidget {
   }
 
   Widget _buildListView(
-      BuildContext context, Box<MedicineHistory> historyBox, Widget? child) {
+      BuildContext context, Box<MedicineHistory> historyBox, _) {
     final histories = historyBox.values.toList().reversed.toList();
+    if(histories.isEmpty){
+      return const HistoryEmpty();
+    }
     return ListView.builder(
       itemCount: histories.length,
       itemBuilder: (context, index) {

@@ -1,12 +1,12 @@
-
 import 'package:alyak/domain/model/medicine_alarm_model.dart';
 import 'package:alyak/domain/model/medicine_history_model.dart';
 import 'package:alyak/domain/model/medicine_model.dart';
 import 'package:alyak/main.dart';
-import 'package:alyak/presentation/today_page/components/emty_widget.dart';
+import 'package:alyak/presentation/today_page/components/empty_widget.dart';
 import 'package:alyak/util/dory_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:intl/intl.dart';
 
 import 'components/today_take_tile.dart';
 
@@ -52,6 +52,12 @@ class TodayPage extends StatelessWidget {
         ));
       }
     }
+
+    medicineAlarms.sort(
+      (a, b) => DateFormat('HH:mm').parse(a.alarmTime).compareTo(
+            DateFormat('HH:mm').parse(b.alarmTime),
+          ),
+    );
 
     return Column(
       children: [
