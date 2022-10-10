@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../main.dart';
+
 class AddAlarmViewModel with ChangeNotifier {
+  AddAlarmViewModel(int updateMedicineId) {
+    final isUpdate = updateMedicineId != -1;
+    if (isUpdate) {
+      final updateAlarms = medicineRepository.medicineBox.values
+          .singleWhere((medicine) => medicine.id == updateMedicineId)
+          .alarms;
+
+      _alarms.clear();
+      _alarms.addAll(updateAlarms);
+    }
+  }
   final _alarms = <String>{
     '8:00',
     '13:00',

@@ -14,17 +14,23 @@ import 'package:provider/provider.dart';
 
 import '../../util/add_page_widget.dart';
 
+// ignore: must_be_immutable
 class AddAlarmPage extends StatelessWidget {
   AddAlarmPage({
     super.key,
     required this.medicineImage,
     required this.medicineName,
-  });
+    required this.updateMedicineId
+  }) {
+    viewModel = AddAlarmViewModel(updateMedicineId);
+  }
 
+  final int updateMedicineId;
   final File? medicineImage;
   final String medicineName;
 
-  final _viewModel = AddAlarmViewModel();
+  late AddAlarmViewModel viewModel;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +55,7 @@ class AddAlarmPage extends StatelessWidget {
               builder: (context, _) {
                 return ListView(children: alarmWidgets);
               },
-              animation: _viewModel,
+              animation: viewModel,
             ),
           ),
         ],
@@ -63,7 +69,7 @@ class AddAlarmPage extends StatelessWidget {
               onPressed: () async {
                 bool result = false;
                 //1. add alarm
-                for (var alarm in _viewModel.alarms) {
+                for (var alarm in viewModel.alarms) {
                   result =
                       await doryNotificationServiceViewModel.addNotifcication(
                     alarmTimeStr: alarm,
@@ -87,7 +93,7 @@ class AddAlarmPage extends StatelessWidget {
                 final medicine = MeidicineModel(
                   id: medicineRepository.newId,
                   name: medicineName,
-                  alarms: _viewModel.alarms.toList(),
+                  alarms: viewModel.alarms.toList(),
                   imagePath: imageFilePath,
                 );
                 medicineRepository.addMedicine(medicine);
@@ -112,15 +118,15 @@ class AddAlarmPage extends StatelessWidget {
     final children = <Widget>[];
 
     children.addAll(
-      _viewModel.alarms.map(
+      viewModel.alarms.map(
         (alarmTime) => AlarmBox(
           time: alarmTime,
-          viewModel: _viewModel,
+          viewModel: viewModel,
         ),
       ),
     );
     children.add(AddAlarmButton(
-      viewModel: _viewModel,
+      viewModel: viewModel,
     ));
     return children;
   }

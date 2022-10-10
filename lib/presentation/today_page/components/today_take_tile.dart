@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alyak/presentation/add_medicine_page/add_medicine_page.dart';
 import 'package:alyak/presentation/components/%08time_setting_bottomsheet.dart';
 import 'package:alyak/presentation/components/more_action_bottomsheet%20copy.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,7 +28,7 @@ class BeforeTakeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme.bodyText2;
-    final viewModel = AddAlarmViewModel();
+    final viewModel = AddAlarmViewModel(medicineAlarm.id);
     return Row(
       children: [
         MedicineImageButton(imagePath: medicineAlarm.imagePath),
@@ -117,7 +118,7 @@ class AfterTakeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme.bodyText2;
-    final viewModel = AddAlarmViewModel();
+    final viewModel = AddAlarmViewModel(medicineAlarm.id);
     return Row(
       children: [
         Stack(
@@ -234,7 +235,8 @@ class _MoreButton extends StatelessWidget {
           context: context,
           builder: (context) => MoreActionBottomSheet(
             onPressedModify: () {
-              
+              Navigator.push(context, FadePageRoute(page: AddMedicinePage(updateMedicineId: medicineAlarm.id,)),)
+              .then((_) => Navigator.pop(context));
             },
             onPressedDeleteOnlyMedicine: () {
               //알람삭제
@@ -274,8 +276,8 @@ class _MoreButton extends StatelessWidget {
     final histories = historyRepository.historyBox.values.where((history) =>
         history.medicineId == medicineAlarm.id &&
         history.medicineKey == medicineAlarm.key);
-        final keys =histories.map((e) => e.key as int);
-        return keys;
+    final keys = histories.map((e) => e.key as int);
+    return keys;
   }
 }
 
