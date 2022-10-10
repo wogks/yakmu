@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -39,4 +41,8 @@ void showPermissionDenied(
       ],
     )),
   );
+}
+
+void deleteImage(String filePath) {
+  File(filePath).delete(recursive: true);
 }

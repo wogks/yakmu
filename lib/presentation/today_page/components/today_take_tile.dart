@@ -235,8 +235,14 @@ class _MoreButton extends StatelessWidget {
           context: context,
           builder: (context) => MoreActionBottomSheet(
             onPressedModify: () {
-              Navigator.push(context, FadePageRoute(page: AddMedicinePage(updateMedicineId: medicineAlarm.id,)),)
-              .then((_) => Navigator.pop(context));
+              Navigator.push(
+                context,
+                FadePageRoute(
+                  page: AddMedicinePage(
+                    updateMedicineId: medicineAlarm.id,
+                  ),
+                ),
+              ).then((_) => Navigator.maybePop(context));
             },
             onPressedDeleteOnlyMedicine: () {
               //알람삭제

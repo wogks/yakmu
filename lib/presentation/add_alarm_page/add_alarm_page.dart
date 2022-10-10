@@ -16,12 +16,11 @@ import '../../util/add_page_widget.dart';
 
 // ignore: must_be_immutable
 class AddAlarmPage extends StatelessWidget {
-  AddAlarmPage({
-    super.key,
-    required this.medicineImage,
-    required this.medicineName,
-    required this.updateMedicineId
-  }) {
+  AddAlarmPage(
+      {super.key,
+      required this.medicineImage,
+      required this.medicineName,
+      required this.updateMedicineId}) {
     viewModel = AddAlarmViewModel(updateMedicineId);
   }
 
@@ -30,7 +29,6 @@ class AddAlarmPage extends StatelessWidget {
   final String medicineName;
 
   late AddAlarmViewModel viewModel;
-  
 
   @override
   Widget build(BuildContext context) {
@@ -67,41 +65,13 @@ class AddAlarmPage extends StatelessWidget {
             height: submitButtonHeight,
             child: ElevatedButton(
               onPressed: () async {
-                bool result = false;
-                //1. add alarm
-                for (var alarm in viewModel.alarms) {
-                  result =
-                      await doryNotificationServiceViewModel.addNotifcication(
-                    alarmTimeStr: alarm,
-                    title: '$alarm 약먹을 시간이네!',
-                    body: '$medicineName 먹는거 잊지말기',
-                    medicineId: medicineRepository.newId,
-                  );
-                  if (!result) {
-                    // ignore: use_build_context_synchronously
-                    return showPermissionDenied(context, permission: '알람');
-                  }
-                }
+                final isUpdate = updateMedicineId != -1;
 
-                //2. save image (local dir)
-                String? imageFilePath;
-                if (medicineImage != null) {
-                  imageFilePath =
-                      await saveImageToLocalDirectory(medicineImage!);
-                }
-
-                final medicine = MeidicineModel(
-                  id: medicineRepository.newId,
-                  name: medicineName,
-                  alarms: viewModel.alarms.toList(),
-                  imagePath: imageFilePath,
-                );
-                medicineRepository.addMedicine(medicine);
-
-                // ignore: use_build_context_synchronously
-                Navigator.popUntil(context, (route) => route.isFirst);
-
-                //3. add medicine model (local db, hive)
+                isUpdate
+                    ? await _onUpdateMedicine(
+                        context, doryNotificationServiceViewModel)
+                    : await _onAddMedicine(
+                        context, doryNotificationServiceViewModel);
               },
               style: ElevatedButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.subtitle1,
@@ -130,6 +100,103 @@ class AddAlarmPage extends StatelessWidget {
     ));
     return children;
   }
+
+  Future<void> _onAddMedicine(BuildContext context,
+      DoryNotificationService doryNotificationServiceViewModel) async {
+    bool result = false;
+    final doryNotificationServiceViewModel =
+        context.read<DoryNotificationService>();
+    //1. add alarm
+    for (var alarm in viewModel.alarms) {
+      result = await doryNotificationServiceViewModel.addNotifcication(
+        alarmTimeStr: alarm,
+        title: '$alarm 약먹을 시간이네!',
+        body: '$medicineName 먹는거 잊지말기',
+        medicineId: medicineRepository.newId,
+      );
+      if (!result) {
+        // ignore: use_build_context_synchronously
+        return showPermissionDenied(context, permission: '알람');
+      }
+    }
+
+    //2. save image (local dir)
+    String? imageFilePath;
+    if (medicineImage != null) {
+      imageFilePath = await saveImageToLocalDirectory(medicineImage!);
+    }
+
+    final medicine = MeidicineModel(
+      id: medicineRepository.newId,
+      name: medicineName,
+      alarms: viewModel.alarms.toList(),
+      imagePath: imageFilePath,
+    );
+    medicineRepository.addMedicine(medicine);
+
+    // ignore: use_build_context_synchronously
+    Navigator.popUntil(context, (route) => route.isFirst);
+
+    //3. add medicine model (local db, hive)
+  }
+
+  Future<void> _onUpdateMedicine(BuildContext context,
+      DoryNotificationService doryNotificationServiceViewModel) async {
+    bool result = false;
+    final doryNotificationServiceViewModel =
+        context.read<DoryNotificationService>();
+
+    final alarmIds = _updateMedicine.alarms.map(
+      (alarmTime) =>
+          doryNotificationServiceViewModel.alarmId(updateMedicineId, alarmTime),
+    );
+    await doryNotificationServiceViewModel.deleteMultipleAlarm(alarmIds);
+    //1. add alarm
+    for (var alarm in viewModel.alarms) {
+      result = await doryNotificationServiceViewModel.addNotifcication(
+        medicineId: updateMedicineId,
+        alarmTimeStr: alarm,
+        title: '$alarm 약 먹을 시간이예요!',
+        body: '$medicineName 잊지말고 복약!',
+      );
+    }
+
+    if (!result) {
+      return showPermissionDenied(context, permission: '알람');
+    }
+
+    //2. save image (local dir)
+    String? imageFilePath = _updateMedicine.imagePath;
+    if (_updateMedicine.imagePath != medicineImage?.path) {
+      // 2-1. delete previous image
+      if (_updateMedicine.imagePath != null) {
+        deleteImage(_updateMedicine.imagePath!);
+      }
+
+      // 2-2. save image (local dir)
+      if (medicineImage != null) {
+        imageFilePath = await saveImageToLocalDirectory(medicineImage!);
+      }
+    }
+
+    final medicine = MeidicineModel(
+      id: updateMedicineId,
+      name: medicineName,
+      imagePath: imageFilePath,
+      alarms: viewModel.alarms.toList(),
+    );
+    medicineRepository.updateMedicine(
+      key: _updateMedicine.key,
+      medicine: medicine,
+    );
+    // ignore: use_build_context_synchronously
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
+  MeidicineModel get _updateMedicine =>
+      medicineRepository.medicineBox.values.singleWhere(
+        (medicine) => medicine.id == updateMedicineId,
+      );
 }
 
 class AlarmBox extends StatelessWidget {
